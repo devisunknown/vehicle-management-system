@@ -163,12 +163,21 @@ def data(request):
 
     dept_counts = registedvehicle.objects.values('department').annotate(total=Count('id')).order_by('-total')
     
-    bar_labels = [item['department'] if item['department'] else 'Unassigned' for item in dept_counts]
-    bar_values = [item['total'] for item in dept_counts]
+
+    if dept_counts.exists():
+        bar_labels = [item['department'] if item['department'] else 'Unassigned' for item in dept_counts]
+        bar_values = [item['total'] for item in dept_counts]
+    else:
+        bar_labels = ['No Data Available']
+        bar_values = [0]
 
     status_counts = registedvehicle.objects.values('intialprogress').annotate(total=Count('id'))
-    pie_labels = [item['intialprogress'] if item['intialprogress'] else 'Unknown' for item in status_counts]
-    pie_values = [item['total'] for item in status_counts]
+    if status_counts.exists():
+        pie_labels = [item['intialprogress'] if item['intialprogress'] else 'Unknown' for item in status_counts]
+        pie_values = [item['total'] for item in status_counts]
+    else:
+        pie_labels = ['No Data Available']
+        pie_values = [0]
 
     return render(request, 'dashboard.html', {
         'total_fleet': total_fleet,
