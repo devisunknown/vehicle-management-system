@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCANCOAT Vehicle Repair Management System</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --sidebar-color: #0f172a;
+            --text-main: #334155;
+            --text-light: #94a3b8;
+            --border-color: #e2e8f0;
+            --success-bg: #d4edda;
+            --success-text: #155724;
+            --warning-bg: #fff3cd;
+            --warning-text: #856404;
+            --info-bg: #e2e8f0;
+            --info-text: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 260px;
+            background-color: var(--sidebar-color);
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        aside h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #f1f5f9;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 1rem;
+        }
+
+        aside ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        aside a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            display: block;
+            transition: all 0.2s;
+        }
+
+        aside a:hover, aside a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            width: calc(100% - 260px);
+            padding: 2.5rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+        }
+
+        header h2 {
+            font-size: 1.75rem;
+            color: #1e293b;
+        }
+
+        header p {
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        /* Table Card Container Styling */
+        .table-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* Status Badge Indicators */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 1rem;
+            text-transform: capitalize;
+        }
+
+        .badge-pending {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+        }
+
+        .badge-in_progress {
+            background-color: #dee2ff;
+            color: #4361ee;
+        }
+
+        .badge-on_hold {
+            background-color: var(--info-bg);
+            color: var(--info-text);
+        }
+        
+        .description-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <h1>SCANCOAT VEHICLE MANAGEMENT SYSTEM</h1>
+        <ul>
+            <li><a href="{% url 'dashboard' %}">Register Vehicle</a></li>
+            <li><a href="{% url 'vehicleview' %}" class="active">Active Repairs</a></li>
+            <li><a href="#">Inventory</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <header>
+            <h2>Active Repairs Registry</h2>
+            <p>Overview of all vehicles currently processed in the system database.</p>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>License Plate</th>
+                        <th>Make & Model</th>
+                        <th>Reported Issues</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td><b>{{ vehicle.department }}</b></td>
+                        <td>{{ vehicle.license_plate }}</td>
+                        <td>{{ vehicle.vehicle_model }}</td>
+                        {% comment %} <td class="description-cell" title="{{ vehicle.issue_description }}">
+                            {{ vehicle.issue_description }}
+                        </td> {% endcomment %}
+                        <td>
+                            <span class="badge badge-{{ vehicle.intialprogress }}">
+                                {{ vehicle.intialprogress|yesno:"In Progress,Pending,On Hold" }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-light); padding: 3rem 0;">
+                            No vehicles registered in the database yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <address style="text-align: center; color: var(--text-light); padding: 2rem 0;">
+        SCANCOAT Vehicle Management System copyright;NK 2026
+    </address>
+
+</body>
+</html>
