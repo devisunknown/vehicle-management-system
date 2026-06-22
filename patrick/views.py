@@ -159,11 +159,12 @@ def data(request):
     pending_count = registedvehicle.objects.filter(intialprogress__icontains='progress').count()
     completed_count = registedvehicle.objects.filter(intialprogress__icontains='complete').count()
     
-    recent_vehicles = registedvehicle.objects.all().order_by('-id')[:5]
 
-    dept_counts = registedvehicle.objects.values('department').annotate(total=Count('id')).order_by('-total')
+    recent_vehicles = registedvehicle.objects.all().order_by('-order_number')[:5]
+
     
-
+    dept_counts = registedvehicle.objects.values('department').annotate(total=Count('order_number')).order_by('-total')
+    
     if dept_counts.exists():
         bar_labels = [item['department'] if item['department'] else 'Unassigned' for item in dept_counts]
         bar_values = [item['total'] for item in dept_counts]
@@ -171,7 +172,7 @@ def data(request):
         bar_labels = ['No Data Available']
         bar_values = [0]
 
-    status_counts = registedvehicle.objects.values('intialprogress').annotate(total=Count('id'))
+    status_counts = registedvehicle.objects.values('intialprogress').annotate(total=Count('order_number'))
     if status_counts.exists():
         pie_labels = [item['intialprogress'] if item['intialprogress'] else 'Unknown' for item in status_counts]
         pie_values = [item['total'] for item in status_counts]
@@ -190,7 +191,6 @@ def data(request):
         'pie_labels_json': json.dumps(pie_labels),
         'pie_values_json': json.dumps(pie_values),
     })
-
 
 
 def dash(request):
