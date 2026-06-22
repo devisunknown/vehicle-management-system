@@ -21,8 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+b4(l+rt@e=&i9e2k3+-y8*%or#u@+bs*)*4ryq77z(pwzd_f$'
-
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+    
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
@@ -100,8 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-local-dev-dummy-key-12345')
+
 
 
 # Internationalization
