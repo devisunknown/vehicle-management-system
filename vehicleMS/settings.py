@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+b4(l+rt@e=&i9e2k3+-y8*%or#u@+bs*)*4ryq77z(pwzd_f$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -101,6 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-local-dev-dummy-key-12345')
 
 
 # Internationalization
