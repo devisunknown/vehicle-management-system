@@ -352,7 +352,7 @@
         <div class="table-controls">
             <!-- Form submits directly back to the same view -->
             <form method="GET" action="{% url 'vehicleview' %}" class="search-bar-container">
-                <input type="text" name="q" placeholder="Search department or plate..." value="{{ query }}">
+                <input type="text" name="search" placeholder="Search department or plate..." value="{{ query }}">
                 <button type="submit">Search</button>
                 {% if query %}
                     <a href="?" class="btn-clear">Clear</a>
@@ -370,7 +370,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>vehicle ID</th>
+                        <th>vehicle Order Number</th>
                         <th>Department</th>
                         <th>License Plate</th>
                         <th>Make & Model</th>
@@ -382,17 +382,17 @@
                 <tbody>
                     {% for vehicle in vehicles %}
                     <tr>
-                        <td>{{vehicle.id}}</td>
+                        <td>{{vehicle.order_number}}</td>
                         <td><b>{{ vehicle.department }}</b></td>
                         <td>{{ vehicle.formatted_plate }}</td>
                         <td>{{ vehicle.vehicle_model }}</td>
                         <td>{{ vehicle.startdate }}</td>
-                        <td><a href="{% url 'delete_vehicle' vehicle.id %}" class="btn-delete">Delete</a></td>
                         <td>
                             <span class="badge badge-{{ vehicle.intialprogress }}">
                                 {{ vehicle.intialprogress|yesno:"In Progress,Pending,On Hold" }}
                             </span>
                         </td>
+                        <td><a href="{% url 'delete_vehicle' vehicle.order_number %}" class="btn-delete">Delete</a></td>
                     </tr>
                     {% empty %}
                     <tr>

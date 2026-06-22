@@ -20,7 +20,7 @@ class patrickprofile(models.Model):
 
 
 class registedvehicle(models.Model):
-    id = models.AutoField(primary_key=True)
+    order_number = models.CharField(primary_key=True, max_length=10,default='0000000000',null=False, unique=True)
     department = models.CharField(max_length=100)
     vehicle_model = models.CharField(max_length=100)
     license_plate = models.CharField(max_length=20, unique=True)

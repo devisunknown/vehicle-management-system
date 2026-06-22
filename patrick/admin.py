@@ -8,4 +8,3 @@ class patrickprofileAdmin(admin.ModelAdmin):
 admin.site.register(patrickprofile, patrickprofileAdmin)
 admin.site.register(registedvehicle)
 
-# Register your models here.

@@ -60,31 +60,32 @@ def vehicle_list(request):
         license_plate = request.POST.get('license_plate')
         intialprogress = request.POST.get('intialprogress')
         issue_description = request.POST.get('issue_description')
+        order_number = request.POST.get('ordernumber')  
         
         reg = registedvehicle(
             department=department,
             vehicle_model=vehicle_model,
             license_plate=license_plate,
             intialprogress=intialprogress,
-            issue=issue_description
+            issue=issue_description,
+            order_number=order_number
         )
         
         try:
             reg.save()
-            # messages.success(request, "Vehicle registered successfully.")
+            
             return redirect('vehicle_list')
         except IntegrityError:
-            # messages.error(request, f"Registration failed: License plate '{license_plate}' already exists.")
             return render(request, 'vehicle_list.html', {
                 'error_msg': f"The license plate '{license_plate}' is already in use.",
                 'formData': request.POST,
                 'vehicles': registedvehicle.objects.all()
             })
 
-    query = request.GET.get('q', '').strip()
+    query = request.GET.get('search', '').strip()
     if query:
         vehicles = registedvehicle.objects.filter(
-            Q(department__icontains=query) | Q(license_plate__icontains=query)
+            Q(department__icontains=query) | Q(license_plate__icontains=query) | Q(order_number__icontains=query)
         )
     else:
         vehicles = registedvehicle.objects.all()
@@ -109,7 +110,7 @@ def vehicleview(request):
 
     if query:
         vehicles = vehicles.filter(
-            Q(department__icontains=query) | Q(license_plate__icontains=query)
+            Q(department__icontains=query) | Q(license_plate__icontains=query) | Q(order_number__icontains=query)
         )
 
     if status:
@@ -123,6 +124,7 @@ def vehicleview(request):
 
     if date_to:
         vehicles = vehicles.filter(startdate__lte=date_to)
+        
 
     departments = registedvehicle.objects.values_list('department', flat=True).distinct()
 
@@ -141,16 +143,15 @@ def dashboard(request):
     return render(request, 'pat.html')
 
 @login_required
-def delete_vehicle(request, vehicle_id):
-    vehicle = get_object_or_404(registedvehicle, id=vehicle_id)
-
-    if request.method == 'POST':
+def delete_vehicle(request, vehicle_order_number):
+  
+    try:
+        vehicle = registedvehicle.objects.get(order_number=vehicle_order_number)
         vehicle.delete()
-        messages.success(request, 'Vehicle record deleted successfully.')
-        return redirect('vehicleview')
-
-    return render(request, 'confirm_delete.html', {'vehicle': vehicle})
-
+    except registedvehicle.DoesNotExist:
+        pass 
+        
+    return redirect('vehicle_list')
 @login_required
 def data(request):
     total_fleet = registedvehicle.objects.count()
