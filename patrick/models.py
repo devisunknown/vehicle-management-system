@@ -29,5 +29,15 @@ class registedvehicle(models.Model):
     intialprogress= models.CharField(max_length=100, default='Not Started')
     issue= models.TextField(blank=True, null=True)
     
+    @property
+    def formatted_plate(self):
+        plate = self.license_plate.upper().replace(' ', '').replace('-', '')
+        if len(plate) >= 8:
+            region = plate[:2]
+            middle = plate[2:6]
+            year = plate[6:8]
+            return f"{region}-{middle}-{year}"
+        return self.license_plate.upper()  
+    
     def __str__(self):
         return self.license_plate

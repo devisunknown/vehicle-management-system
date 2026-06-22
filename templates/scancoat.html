@@ -117,7 +117,7 @@
         <h1>SCANCOAT ADMIN</h1>
         <p>Sign in to manage repairs</p>
         
-        <form action="{% url 'login' %}" method="POST">
+        <form action="{% url 'scancoatadmin' %}" method="POST">
             {% csrf_token %}
             
             <div class="form-group">

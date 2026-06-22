@@ -1,34 +1,39 @@
-from django.shortcuts import render, redirect
+from urllib import request
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth import login as auth_login 
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponse
-
+from django.db.models import Q
 from patrick.models import registedvehicle
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+import json
+from django.db import IntegrityError
 
 def loginpg(request):
     return render(request, 'scancoat.html')
 
-def login(request):
+def scancoatadmin(request):
     if request.method == 'POST':
         username_input = request.POST.get('username')
         password_input = request.POST.get('password')
-        
+       
         
         user = authenticate(request, username=username_input, password=password_input)
         
    
         if user is not None:
             auth_login(request, user) 
-            return render(request, 'pat.html')
+            return redirect('dashboard')
         
         else:
             messages.error(request, 'Invalid username or password please try again.')
             return redirect('loginpg')
             
     return redirect('loginpg')
-
+@login_required
 def patrickprof(request):
     return render(request, 'patrickp.html')
 
@@ -48,26 +53,140 @@ def register(request):
         
     return render(request, 'patrickp.html')
 
-
-
 def vehicle_list(request):
-    from .models import registedvehicle
     if request.method == 'POST':
         department = request.POST.get('department')
         vehicle_model = request.POST.get('vehicle_model')
         license_plate = request.POST.get('license_plate')
         intialprogress = request.POST.get('intialprogress')
-        startdate = request.POST.get('startdate')
-        issue= request.POST.get('issue_description')
-        reg=registedvehicle(department=department, vehicle_model=vehicle_model, license_plate=license_plate, intialprogress=intialprogress, startdate=startdate, issue=issue)
-        reg.save()
-    return HttpResponse("Vehicle registered successfully.")   
+        issue_description = request.POST.get('issue_description')
+        
+        reg = registedvehicle(
+            department=department,
+            vehicle_model=vehicle_model,
+            license_plate=license_plate,
+            intialprogress=intialprogress,
+            issue=issue_description
+        )
+        
+        try:
+            reg.save()
+            # messages.success(request, "Vehicle registered successfully.")
+            return redirect('vehicle_list')
+        except IntegrityError:
+            # messages.error(request, f"Registration failed: License plate '{license_plate}' already exists.")
+            return render(request, 'vehicle_list.html', {
+                'error_msg': f"The license plate '{license_plate}' is already in use.",
+                'formData': request.POST,
+                'vehicles': registedvehicle.objects.all()
+            })
+
+    query = request.GET.get('q', '').strip()
+    if query:
+        vehicles = registedvehicle.objects.filter(
+            Q(department__icontains=query) | Q(license_plate__icontains=query)
+        )
+    else:
+        vehicles = registedvehicle.objects.all()
+
+    return render(request, 'vehicle_list.html', {
+        'vehicles': vehicles,
+        'query': query,
+    })
+            
+    
 
 
+@login_required
 def vehicleview(request):
-    vehicles=registedvehicle.objects.all()
-    return render(request, 'vehicle_list.html', {'vehicles': vehicles})
+    query = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    department = request.GET.get('department', '').strip()
+    date_from = request.GET.get('date_from', '').strip()
+    date_to = request.GET.get('date_to', '').strip()
 
+    vehicles = registedvehicle.objects.all()
 
+    if query:
+        vehicles = vehicles.filter(
+            Q(department__icontains=query) | Q(license_plate__icontains=query)
+        )
+
+    if status:
+        vehicles = vehicles.filter(intialprogress=status)
+
+    if department:
+        vehicles = vehicles.filter(department=department)
+
+    if date_from:
+        vehicles = vehicles.filter(startdate__gte=date_from)
+
+    if date_to:
+        vehicles = vehicles.filter(startdate__lte=date_to)
+
+    departments = registedvehicle.objects.values_list('department', flat=True).distinct()
+
+    return render(request, 'vehicle_list.html', {
+        'vehicles': vehicles,
+        'query': query,
+        'status': status,
+        'department': department,
+        'date_from': date_from,
+        'date_to': date_to,
+        'departments': departments,
+    })
+
+@login_required  
 def dashboard(request):
     return render(request, 'pat.html')
+
+@login_required
+def delete_vehicle(request, vehicle_id):
+    vehicle = get_object_or_404(registedvehicle, id=vehicle_id)
+
+    if request.method == 'POST':
+        vehicle.delete()
+        messages.success(request, 'Vehicle record deleted successfully.')
+        return redirect('vehicleview')
+
+    return render(request, 'confirm_delete.html', {'vehicle': vehicle})
+
+@login_required
+def data(request):
+    total_fleet = registedvehicle.objects.count()
+    
+    pending_count = registedvehicle.objects.filter(intialprogress__icontains='progress').count()
+    completed_count = registedvehicle.objects.filter(intialprogress__icontains='complete').count()
+    
+    recent_vehicles = registedvehicle.objects.all().order_by('-id')[:5]
+
+    dept_counts = registedvehicle.objects.values('department').annotate(total=Count('id')).order_by('-total')
+    
+    bar_labels = [item['department'] if item['department'] else 'Unassigned' for item in dept_counts]
+    bar_values = [item['total'] for item in dept_counts]
+
+    status_counts = registedvehicle.objects.values('intialprogress').annotate(total=Count('id'))
+    pie_labels = [item['intialprogress'] if item['intialprogress'] else 'Unknown' for item in status_counts]
+    pie_values = [item['total'] for item in status_counts]
+
+    return render(request, 'dashboard.html', {
+        'total_fleet': total_fleet,
+        'pending_count': pending_count,
+        'completed_count': completed_count,
+        'recent_vehicles': recent_vehicles,
+        
+        'bar_labels_json': json.dumps(bar_labels),
+        'bar_values_json': json.dumps(bar_values),
+        'pie_labels_json': json.dumps(pie_labels),
+        'pie_values_json': json.dumps(pie_values),
+    })
+
+
+
+def dash(request):
+    return render(request, 'dashboard.html' )
+
+
+def logooutus(request):
+    logout(request)
+    return redirect('loginpg')
