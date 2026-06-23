@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,8 +29,7 @@
             color: var(--text-main);
             min-height: 100vh;
         }
-
-        /* Sidebar Navigation */
+      
         aside {
             width: 260px;
             background-color: var(--sidebar-color);
@@ -70,7 +70,7 @@
             color: white;
         }
 
-        /* Main Content Area */
+       
         main {
             flex-1: 1;
             width: calc(100% - 260px);
@@ -91,7 +91,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Form Card Styling */
         .form-container {
             background: white;
             padding: 2rem;
@@ -176,11 +175,23 @@
         button:hover {
             background-color: var(--primary-hover);
         }
+
+        img.logo {
+            display: block;
+            max-width: 200px;
+            height: auto;
+            margin: 0 auto 1rem auto;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
     </style>
 </head>
 <body>
 
     <aside>
+        
+            <img src="{% static 'patrick/images/scancoatlogo.png' %}" alt="Scancoat Limited Logo" class="logo"> 
+        
         <h1>SCANCOAT VEHICLE MANAGEMENT SYSTEM</h1>
         <ul>
             <li><a href="{% url 'dashboard' %}" class="active">➕ Register Vehicle</a></li>
@@ -192,7 +203,9 @@
 
     <main>
         <header>
-            <h1 style="text-align: center;">Welcome, {{ request.user.username }}</h1>
+            <h3 style="text-align: right;">Welcome, {{ request.user.username }}</h3>
+            <img src="{% static 'patrick/images/scancoatlogo.png' %}" alt="Scancoat Limited Logo" class="logo">
+
             <h2>Vehicle Registration</h2>
             <p>Input customer and vehicle details to check them into the repair system.</p>
         </header>
@@ -213,10 +226,10 @@
     </select>
 </div>
 
-                    {% comment %} <div class="form-group">
-                        <label for="owner-phone">Phone Number</label>
-                        <input type="tel" id="owner-phone" name="owner_phone" placeholder="e.g., +233 24 000 0000" required>
-                    </div> {% endcomment %}
+                     <div class="form-group">
+                        <label for="equip_number">Equipment Number</label>
+                        <input type="text" id="equip_number" name="equip_number" placeholder="Enter equipment number..." required>
+                    </div> 
 
                     <div class="form-group">
                         <label for="license-plate">License Plate Number</label>
@@ -229,7 +242,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="car-make">drivers name</label>
+                        <label for="car-make">Driver's Name</label>
                         <input type="text" id="vehicle-model" name="vehicle_model"  required>
                     </div>
 

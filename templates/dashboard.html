@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -206,6 +207,14 @@
             font-size: 12px;
             font-weight: bold;
         }
+        img.logo {
+            display: block;
+            max-width: 200px;
+            height: auto;
+            margin: 0 auto 1rem auto;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
         .state-badge.pending { background-color: #ffeaa7; color: #d63031; }
         .state-badge.done { background-color: #55efc4; color: #00b894; }
     </style>
@@ -213,7 +222,9 @@
 <body>
 
     <div class="sidebar">
-        <h2>SCANCOAT SYSTEM STATISTICS</h2>
+        <img src="{% static 'patrick/images/scancoatlogo.png' %}" alt="Scancoat Limited Logo" class="logo"> 
+        
+        <h2>SCANCOAT VEHICLE  MANAGEMENT SYSTEM</h2>
         <a href="{% url 'dashboard' %}" class="active">📊 Dashboard Hub</a>
         <a href="{% url 'vehicleview' %}">🚗 View All Vehicles</a>
         <a href="{% url 'dashboard' %}">➕ Register New Asset</a>
@@ -223,6 +234,8 @@
     <div class="main-view">
         
         <div class="top-navbar">
+            <img src="{% static 'patrick/images/scancoatlogo.png' %}" alt="Scancoat Limited Logo" class="logo"> 
+        
             <h1>Welcome, {{ request.user.username }}</h1>
             <div class="nav-actions">
                 <a href="{% url 'dashboard' %}" class="btn-add">+ Add Vehicle</a>

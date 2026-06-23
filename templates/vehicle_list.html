@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -322,6 +323,14 @@
     text-decoration: none;
     transition: background-color 0.2s;
 }
+img.logo {
+            display: block;
+            max-width: 200px;
+            height: auto;
+            margin: 0 auto 1rem auto;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
 
 .btn-delete:hover {
     background-color: #fef2f2;
@@ -331,6 +340,8 @@
 <body>
 
     <aside>
+        <img src="{% static 'patrick/images/scancoatlogo.png' %}" alt="Scancoat Limited Logo" class="logo"> 
+        
         <h1>SCANCOAT VEHICLE MANAGEMENT SYSTEM</h1>
         <ul>
             <li><a href="{% url 'dashboard' %}">👤Register Vehicle</a></li>
@@ -342,7 +353,8 @@
 
     <main>
         <header>
-            
+            <img src="{% static 'patrick/images/scancoatlogo.png' %}" alt="Scancoat Limited Logo" class="logo"> 
+        
             <h4 style="text-align: right;">log in as, {{ request.user.username }}</h4>
 
             <h2>Active Repairs Registry</h2>
@@ -350,9 +362,9 @@
         </header>
 
         <div class="table-controls">
-            <!-- Form submits directly back to the same view -->
+            
             <form method="GET" action="{% url 'vehicleview' %}" class="search-bar-container">
-                <input type="text" name="search" placeholder="Search department or plate..." value="{{ query }}">
+                <input type="text" name="q" placeholder="Search department or plate..." value="{{ query }}">
                 <button type="submit">Search</button>
                 {% if query %}
                     <a href="?" class="btn-clear">Clear</a>
@@ -371,6 +383,7 @@
                 <thead>
                     <tr>
                         <th>vehicle Order Number</th>
+                        <th>Vehicle Equipment Number</th>   
                         <th>Department</th>
                         <th>License Plate</th>
                         <th>Driver name</th>
@@ -383,6 +396,7 @@
                     {% for vehicle in vehicles %}
                     <tr>
                         <td>{{vehicle.order_number}}</td>
+                         <td>{{vehicle.equip_id}}</td>
                         <td><b>{{ vehicle.department }}</b></td>
                         <td>{{ vehicle.formatted_plate }}</td>
                         <td>{{ vehicle.vehicle_model }}</td>

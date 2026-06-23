@@ -61,6 +61,7 @@ def vehicle_list(request):
         intialprogress = request.POST.get('intialprogress')
         issue_description = request.POST.get('issue_description')
         order_number = request.POST.get('ordernumber')  
+        equip_number = request.POST.get('equip_number')  
         
         reg = registedvehicle(
             department=department,
@@ -68,7 +69,8 @@ def vehicle_list(request):
             license_plate=license_plate,
             intialprogress=intialprogress,
             issue=issue_description,
-            order_number=order_number
+            order_number=order_number,
+            equip_number=equip_number,
         )
         
         try:
@@ -82,10 +84,10 @@ def vehicle_list(request):
                 'vehicles': registedvehicle.objects.all()
             })
 
-    query = request.GET.get('search', '').strip()
+    query = request.GET.get('q', '').strip()
     if query:
         vehicles = registedvehicle.objects.filter(
-            Q(department__icontains=query) | Q(license_plate__icontains=query) | Q(order_number__icontains=query)
+            Q(department__icontains=query) | Q(license_plate__icontains=query) | Q(order_number__icontains=query) | Q(equip_id_icontains=query)
         )
     else:
         vehicles = registedvehicle.objects.all()
@@ -110,7 +112,7 @@ def vehicleview(request):
 
     if query:
         vehicles = vehicles.filter(
-            Q(department__icontains=query) | Q(license_plate__icontains=query) | Q(order_number__icontains=query)
+            Q(department__icontains=query) | Q(license_plate__icontains=query) | Q(order_number__icontains=query) | Q(equip_id__icontains=query)
         )
 
     if status:
