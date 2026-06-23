@@ -13,6 +13,7 @@ from django.db.models import Count
 import json
 from django.db import IntegrityError
 from django.urls import reverse
+import openpyxl
 
 def loginpg(request):
     return render(request, 'scancoat.html')
@@ -219,3 +220,39 @@ def complete_vehicle(request, vehicle_order_number):
         
 
     return redirect('vehicle_list')
+
+
+@login_required
+def upload_excel(request):
+    if request.method == "POST" and request.FILES.get('excel_file'):
+        excel_file = request.FILES['excel_file']
+        
+        if not excel_file.name.endswith('.xlsx'):
+            messages.error(request, "Invalid file format. Please upload a .xlsx Excel file.")
+            return redirect('vehicleview')
+            
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            worksheet = wb.active
+            created_count = 0
+            
+            for row in worksheet.iter_rows(min_row=2, values_only=True):
+                if not row[0]: 
+                    continue
+                    
+                registedvehicle.objects.create(
+                    order_number=row[0],
+                    equip_id=row[1],
+                    department=row[2],
+                    license_plate=row[3],
+                    vehicle_model=row[4],
+                    intialprogress=row[5] if row[5] else 'pending'
+                )
+                created_count += 1
+                
+            messages.success(request, f"Successfully imported {created_count} vehicle records!")
+            
+        except Exception as e:
+            messages.error(request, f"Error processing file: {str(e)}")
+            
+    return redirect('vehicleview')

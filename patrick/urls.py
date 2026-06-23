@@ -15,5 +15,6 @@ urlpatterns = [
    path('logout/', views.logooutus, name='logout'),
    path('complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
   path('vehicle/complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
+  path('vehicle/upload-excel/', views.upload_excel, name='upload_excel'),
 
 ]

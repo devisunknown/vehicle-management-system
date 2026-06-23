@@ -453,7 +453,15 @@
                 Found <strong>{{ vehicles.count }}</strong> record{{ vehicles.count|pluralize }}
             </div>
             {% endif %}
+        
         </form>
+        <form action="{% url 'upload_excel' %}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.5rem; align-items: center;"><br><br>
+        {% csrf_token %}
+        <input type="file" name="excel_file" accept=".xlsx" required style="font-size: 0.85rem; color: var(--text-main);"><br><br>
+        <button type="submit" class="btn-filter" style="background-color: var(--success-color);"><br><br>
+            📊 Import Excel
+        </button>
+    </form>
     </main>
 
 </body>
