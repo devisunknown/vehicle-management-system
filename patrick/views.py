@@ -6,11 +6,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponse
 from django.db.models import Q
+from django.utils import timezone
 from patrick.models import registedvehicle
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 import json
 from django.db import IntegrityError
+from django.urls import reverse
 
 def loginpg(request):
     return render(request, 'scancoat.html')
@@ -202,3 +204,18 @@ def dash(request):
 def logooutus(request):
     logout(request)
     return redirect('loginpg')
+
+@login_required
+def complete_vehicle(request, vehicle_order_number):
+    try:
+        
+        vehicle = registedvehicle.objects.get(order_number=vehicle_order_number)
+        vehicle.intialprogress = 'complete'  
+        vehicle.enddate = timezone.now()
+        vehicle.save()
+        messages.success(request, f"Vehicle {vehicle_order_number} marked as complete!")
+    except registedvehicle.DoesNotExist:
+        messages.error(request, "Vehicle not found.")
+        
+
+    return redirect('vehicle_list')

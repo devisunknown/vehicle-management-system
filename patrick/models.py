@@ -18,6 +18,7 @@ class registedvehicle(models.Model):
     issue = models.TextField(blank=True, null=True)
     equip_number = models.PositiveIntegerField(blank=True, null=True)
     equip_id = models.CharField(max_length=100, blank=True, editable=False)
+    enddate = models.DateTimeField(null=True, blank=True)
 
     DEPARTMENT_ACRONYMS = {
         'Security': 'SYD',

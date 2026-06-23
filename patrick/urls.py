@@ -13,4 +13,7 @@ urlpatterns = [
    path('delete_vehicle/<str:vehicle_order_number>/', views.delete_vehicle, name='delete_vehicle'),
    path('data/', views.data, name='data'),
    path('logout/', views.logooutus, name='logout'),
+   path('complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
+  path('vehicle/complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
+
 ]
