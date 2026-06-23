@@ -1,11 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<link rel="icon" href="{% static 'patrick/images/scancoatlogo.png' %}" type="image/png">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCANCOAT Vehicle Repair Management System</title>
+    <link rel="icon" href="{% static 'patrick/images/scancoatlogo.png' %}" type="image/png">
     <style>
         :root {
             --primary-color: #2563eb;
@@ -364,7 +364,7 @@
                         <th>License Plate</th>
                         <th>Driver Name</th>
                         <th>Start Date of Repair</th>
-                        <th>End date of repair</th>
+                        <th>End Date of Repair</th>
                         <th>Status</th>
                         <th>Actions/Delete</th>
                         <th>Completion Status</th>
@@ -379,13 +379,15 @@
                         <td>{{ vehicle.formatted_plate }}</td>
                         <td>{{ vehicle.vehicle_model }}</td>
                         <td>{{ vehicle.startdate }}</td>
-                    <td>
-                    {% if vehicle.enddate %}
-                        {{ vehicle.enddate|date:"Y-m-d H:i" }}
-                    {% else %}
-                        <span style="color: var(--text-light);">-</span>
-                    {% endif %}
-                </td>
+                        <td>
+                            {% if vehicle.enddate %}
+                                {{ vehicle.enddate|date:"Y-m-d H:i" }}
+                            {% else %}
+                                <span style="color: var(--text-light);">-</span>
+                            {% endif %}
+                        </td>
+                        <!-- Fixed Missing opening <td> Tag here -->
+                        <td>
                             <span class="badge badge-{{ vehicle.intialprogress }}">
                                 {{ vehicle.intialprogress }}
                             </span>
@@ -406,7 +408,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="9" style="text-align: center; color: var(--text-light); padding: 3rem 0;">
+                        <td colspan="10" style="text-align: center; color: var(--text-light); padding: 3rem 0;">
                             No vehicles found matching your criteria.
                         </td>
                     </tr>
