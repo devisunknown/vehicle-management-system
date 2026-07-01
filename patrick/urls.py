@@ -14,7 +14,7 @@ urlpatterns = [
    path('data/', views.data, name='data'),
    path('logout/', views.logooutus, name='logout'),
    path('complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
-  path('vehicle/complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
-  path('vehicle/upload-excel/', views.upload_excel, name='upload_excel'),
-
+   path('vehicle/complete/<str:vehicle_order_number>/', views.complete_vehicle, name='complete_vehicle'),
+   path('vehicle/upload-excel/', views.upload_excel, name='upload_excel'),
+   path('vehicle/paid/<str:vehicle_order_number>/', views.paid, name='paid'),
 ]

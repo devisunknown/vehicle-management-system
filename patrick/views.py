@@ -254,5 +254,23 @@ def upload_excel(request):
             
         except Exception as e:
             messages.error(request, f"Error processing file: {str(e)}")
-            
+             
     return redirect('vehicleview')
+
+
+
+
+
+@login_required
+def paid(request, vehicle_order_number):
+    if request.method == 'POST':
+      try:
+        vehicle = registedvehicle.objects.get(order_number=vehicle_order_number)
+        vehicle.payment = 'paid'  
+        vehicle.save()
+        messages.success(request, f"Vehicle {vehicle_order_number} has been paid off")
+      except registedvehicle.DoesNotExist:
+         messages.error(request, "Vehicle not found.")
+        
+
+    return redirect('vehicle_list')

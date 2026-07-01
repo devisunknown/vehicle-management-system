@@ -19,7 +19,10 @@ class registedvehicle(models.Model):
     equip_number = models.PositiveIntegerField(blank=True, null=True)
     equip_id = models.CharField(max_length=100, blank=True, editable=False)
     enddate = models.DateTimeField(null=True, blank=True)
-
+    payment=models.CharField(max_length=100,default='not stated')
+    
+    
+    
     DEPARTMENT_ACRONYMS = {
         'Security': 'SYD',
         'Maintenance': 'MNT',

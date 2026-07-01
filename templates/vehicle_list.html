@@ -164,7 +164,7 @@
             font-weight: 600;
             padding: 1rem;
             border-bottom: 2px solid var(--border-color);
-        }
+        } 
 
         td {
             padding: 1rem;
@@ -191,6 +191,7 @@
         .badge-on_hold { background-color: #e2e8f0; color: #64748b; }
         .badge-completed { background-color: #d1fae5; color: #065f46; }
         .badge-done { background-color: #e2e8f0; color: #475569; }
+        .badge-paid { background-color: #e2e8f0; color: lightgreen; }
 
         .filter-bar {
             display: flex;
@@ -314,6 +315,21 @@
             .filter-bar { flex-direction: column; align-items: stretch; }
             .filter-input, .filter-select, .filter-date, .date-range { width: 100%; }
         }
+
+
+        .btn-unpaid {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-unpaid:hover { background-color:lightgreen; }
     </style>
 </head>
 <body>
@@ -368,6 +384,7 @@
                         <th>Status</th>
                         <th>Actions/Delete</th>
                         <th>Completion Status</th>
+                        <th>paid/unpaid</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -386,7 +403,7 @@
                                 <span style="color: var(--text-light);">-</span>
                             {% endif %}
                         </td>
-                        <!-- Fixed Missing opening <td> Tag here -->
+                    
                         <td>
                             <span class="badge badge-{{ vehicle.intialprogress }}">
                                 {{ vehicle.intialprogress }}
@@ -405,6 +422,16 @@
                                 <span class="badge badge-done">Done</span>
                             {% endif %}
                         </td>
+                        <td>
+                            {% if "paid" not in vehicle.payment|lower %}
+                                <form action="{% url 'paid' vehicle.order_number %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-unpaid">unpaid click as payment received</button>
+                                </form>
+                            {% else %}
+                                <span class="badge badge-done">Paid</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -417,7 +444,7 @@
             </table>
         </div>
 
-        <!-- Bottom Filter Panel -->
+        
         <form method="GET" action="{% url 'vehicleview' %}" class="filter-bar">
             <input type="text" name="q" class="filter-input" placeholder="Search department or plate..." value="{{ query }}">
 
